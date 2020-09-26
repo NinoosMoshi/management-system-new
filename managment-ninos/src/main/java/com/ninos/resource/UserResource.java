@@ -22,6 +22,9 @@ import com.ninos.exception.domain.UserNotFoundException;
 import com.ninos.exception.domain.UsernameExistException;
 import com.ninos.service.UserService;
 import com.ninos.utility.JWTTokenProvider;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping({"/", "/user"})
@@ -54,9 +57,6 @@ public class UserResource extends ExceptionHandling{
 	}
 
 
-
-
-
 	@PostMapping("/login")
 	public ResponseEntity<User> login(@RequestBody User user) {
 		authenticate(user.getUsername(), user.getPassword());
@@ -65,6 +65,29 @@ public class UserResource extends ExceptionHandling{
 		HttpHeaders jwtHeader = getJwtHeader(userPrincipal);
 		return new ResponseEntity<>(loginUser, jwtHeader , HttpStatus.OK);
 	}
+
+
+	@PostMapping("/add")
+	public ResponseEntity<User> addNewUser(@RequestParam("firstName") String firstName,
+										   @RequestParam("lastName") String lastName,
+										   @RequestParam("username") String username,
+										   @RequestParam("email") String email,
+										   @RequestParam("role") String role,
+										   @RequestParam("isActive") String isActive,
+										   @RequestParam("isNotLocked") String isNotLocked,
+										   @RequestParam(value = "profileImage", required = false)MultipartFile profileImage) throws UserNotFoundException, UsernameExistException, EmailExistException, IOException {
+
+
+		User newUser = userService.addNewUser(firstName, lastName, username, email,role, Boolean.parseBoolean(isNotLocked), Boolean.parseBoolean(isActive), profileImage);
+           return new ResponseEntity<>(newUser,HttpStatus.OK);
+	}
+
+
+
+
+
+
+
 
 	private void authenticate(String username, String password) {
 		authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
