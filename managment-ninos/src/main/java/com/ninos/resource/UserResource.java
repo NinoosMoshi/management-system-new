@@ -119,7 +119,6 @@ public class UserResource extends ExceptionHandling{
 	}
 
 	private ResponseEntity<HttpResponse> response(HttpStatus httpStatus, String message) {
-
 	}
 
 
