@@ -8,11 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 import static com.ninos.constant.SecurityConstant.*;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
 import static org.springframework.http.HttpStatus.OK;
 
 import javax.mail.MessagingException;
@@ -31,6 +33,7 @@ import java.util.List;
 public class UserResource extends ExceptionHandling{
 
 	public static final String EMAIL_SENT = "An email with a new password was sent to: ";
+	public static final String USER_DELETED_SUCCESSFULLY = "User deleted successfully";
 	private UserService userService;
 	private AuthenticationManager authenticationManager;
 	private JWTTokenProvider JWTTokenProvider;
@@ -118,7 +121,29 @@ public class UserResource extends ExceptionHandling{
 		return response(OK, EMAIL_SENT+ email);
 	}
 
+	@DeleteMapping("/delete/{id}")
+	@PreAuthorize("hasAnyAuthority('user:delete')")
+	public ResponseEntity<HttpResponse> deleteUser(@PathVariable("id") long id){
+         userService.deleteUser(id);
+         return response( NO_CONTENT, USER_DELETED_SUCCESSFULLY);  // NO_CONTENT = 204
+	}
+
+	@PostMapping("/updateProfileImage")
+	public ResponseEntity<User> updateProfileImage(
+									   @RequestParam("username") String username,
+									   @RequestParam(value = "profileImage")MultipartFile profileImage) throws UserNotFoundException, UsernameExistException, EmailExistException, IOException {
+
+
+		User user = userService.updateProfileImage(username, profileImage);
+		return new ResponseEntity<>(user, OK);
+	}
+
+
+
+
 	private ResponseEntity<HttpResponse> response(HttpStatus httpStatus, String message) {
+		HttpResponse body = new HttpResponse(httpStatus.value(), httpStatus, httpStatus.getReasonPhrase().toUpperCase(),message.toUpperCase());
+		return new ResponseEntity<>(body,httpStatus);
 	}
 
 
