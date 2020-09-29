@@ -125,10 +125,10 @@ public class UserServiceImple implements UserService, UserDetailsService {
 
 
 	private String getTemporaryProfileImageUrl(String username) {
-		return ServletUriComponentsBuilder.fromCurrentContextPath().path("DEFAULT_USER_IMAGE_PATH" + username).toUriString();
+		return ServletUriComponentsBuilder.fromCurrentContextPath().path(DEFAULT_USER_IMAGE_PATH + username).toUriString();
 	}
-	
-	
+
+
 
 
 
@@ -242,7 +242,7 @@ public class UserServiceImple implements UserService, UserDetailsService {
 	}
 
 	private String setProfileImageUrl(String username) {
-		return ServletUriComponentsBuilder.fromCurrentContextPath().path("USER_IMAGE_PATH" + username + FORWARD_SLASH
+		return ServletUriComponentsBuilder.fromCurrentContextPath().path(USER_IMAGE_PATH + username + FORWARD_SLASH
 		 + username + DOT + JPG_EXTENSION).toUriString();
 	}
 
